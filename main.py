@@ -27,10 +27,9 @@ async def main():
     task3 = asyncio.create_task(shell_processor.process_shell_humidity())
 
     # awaiting till all 3 tasks are done asynchronously
-    value3 = await task3
+    value3 = await task3  # task3 probably has to process more records than other tasks
     await task2
     await task1
-    # Takes the longest time
     end = time.time()
 
     print(f"Time taken to run the program asynchronously is {end - begin}")

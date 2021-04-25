@@ -5,7 +5,7 @@ import time
 
 
 class Processor(ABC):
-    #  Abstract Processor class process data
+    #  Abstract Processor class to process data
     @abstractmethod
     def __init__(self, source, sink):
         # Instantiating required variables which are needed to do the operations
@@ -20,7 +20,7 @@ class Processor(ABC):
 
     @abstractmethod
     def stream_data(self):
-        # Loading data when through generators, avoiding memory error
+        # Loading data through generators, avoiding memory error
         for record in pd.read_csv(self.source).to_dict('records'):
             yield record
 
@@ -41,6 +41,7 @@ class EnrichInfant(Processor):
         data = super().stream_data()
         # Simulating each record feeding to the processor
         for record in data:
+            # await asyncio.sleep(0.001)
             rings = record["Class_number_of_rings"]
             # Logic to consider appropiate records
             if record["Sex"] == "I" and rings >= 14:
@@ -48,19 +49,18 @@ class EnrichInfant(Processor):
                     self.state[rings] = self.state[rings] + 1
                 else:
                     self.state[rings] = 1
-
-                self.id = self.id + str(rings) + \
+                row_id = self.id
+                row_id = row_id + str(rings) + \
                     "_" + str(self.state[rings])
 
                 list_record = list(record.values())
-                list_record.insert(0, self.id)
+                list_record.insert(0, row_id)
                 # Appeding the appropriate data with an extra ID attribute
                 with open(self.sink, 'a', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
                 # print("process1")
-            self.id = "R_"
 
 
 class EnrichMale(Processor):
