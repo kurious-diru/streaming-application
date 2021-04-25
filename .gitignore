@@ -1,0 +1,4 @@
+# ignoring virtual environment
+*venv*
+# Unnecessary cpython files are ignored
+*.cpython*
