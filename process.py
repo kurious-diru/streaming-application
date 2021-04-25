@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 import csv
+import time
 
 
 class Processor(ABC):
@@ -24,7 +25,7 @@ class Processor(ABC):
             yield record
 
 
-class Processor1(Processor):
+class EnrichInfant(Processor):
 
     def __init__(self, source, sink):
         super().__init__(source, sink)
@@ -36,7 +37,7 @@ class Processor1(Processor):
     def stream_data(self):
         super().stream_data()
 
-    def process_infants_with_more_than_14_rings(self):
+    async def process_infants_with_more_than_14_rings(self):
         data = super().stream_data()
         # Simulating each record feeding to the processor
         for record in data:
@@ -58,10 +59,11 @@ class Processor1(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
+                # print("process1")
             self.id = "R_"
 
 
-class Processor2(Processor):
+class EnrichMale(Processor):
 
     def __init__(self, source, sink):
         super().__init__(source, sink)
@@ -69,7 +71,7 @@ class Processor2(Processor):
     def stream_data(self):
         super().stream_data()
 
-    def process_males_heavy_and_short(self):
+    async def process_males_heavy_and_short(self):
         data = super().stream_data()
         # Simulating each record feeding to the processor
         for record in data:
@@ -83,9 +85,10 @@ class Processor2(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
+                # print("process2")
 
 
-class Processor3(Processor):
+class FilterAbalone(Processor):
 
     def __init__(self, source, sink):
         super().__init__(source, sink)
@@ -99,7 +102,7 @@ class Processor3(Processor):
     def stream_data(self):
         super().stream_data()
 
-    def process_shell_humidity(self):
+    async def process_shell_humidity(self):
         data = super().stream_data()
         # Simulating each record feeding to the processor
         for record in data:
@@ -117,21 +120,26 @@ class Processor3(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
+                # print("process3")
 
 
 if __name__ == '__main__':
 
+    begin = time.time()
     # take source input data
     source = "data/input/abalone_full.csv"
 
     sink1 = "data/output/infants_with_more_than_14_rings.csv"
-    infant_processor = Processor1(source, sink1)
+    infant_processor = EnrichInfant(source, sink1)
     infant_processor.process_infants_with_more_than_14_rings()
 
     sink2 = "data/output/males_heavy_and_short.csv"
-    males_processor = Processor2(source, sink2)
+    males_processor = EnrichMale(source, sink2)
     males_processor.process_males_heavy_and_short()
 
     sink3 = "data/output/shell_humidity.csv"
-    shell_processor = Processor3(source, sink3)
+    shell_processor = FilterAbalone(source, sink3)
     shell_processor.process_shell_humidity()
+
+    end = time.time()
+    print(f"Time taken to run the program synchronously is {end - begin}")
