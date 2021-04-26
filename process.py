@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
-import pandas as pd
 import csv
+import time
+from produce import CSVInputStream
+import asyncio
 import time
 
 
@@ -18,14 +20,8 @@ class Processor(ABC):
                             "Shucked_weight", "Viscera_weight", "Shell_weight", "Class_number_of_rings"])
             file.close()
 
-    @abstractmethod
-    def stream_data(self):
-        # Loading data through generators, avoiding memory error
-        for record in pd.read_csv(self.source).to_dict('records'):
-            yield record
 
-
-class EnrichInfant(Processor):
+class EnrichInfantAbalone(Processor):
 
     def __init__(self, source, sink):
         super().__init__(source, sink)
@@ -34,13 +30,9 @@ class EnrichInfant(Processor):
         # Overriding ID with appropriate structure representing rings
         self.id = "R_"
 
-    def stream_data(self):
-        super().stream_data()
-
-    async def process_infants_with_more_than_14_rings(self):
-        data = super().stream_data()
+    def process_infants_with_more_than_14_rings(self, input_stream):
         # Simulating each record feeding to the processor
-        for record in data:
+        for record in input_stream:
             # await asyncio.sleep(0.001)
             rings = record["Class_number_of_rings"]
             # Logic to consider appropiate records
@@ -60,21 +52,17 @@ class EnrichInfant(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
-                # print("process1")
+                # print("p1")
 
 
-class EnrichMale(Processor):
+class EnrichMaleAbalone(Processor):
 
     def __init__(self, source, sink):
         super().__init__(source, sink)
 
-    def stream_data(self):
-        super().stream_data()
-
-    async def process_males_heavy_and_short(self):
-        data = super().stream_data()
+    def process_males_heavy_and_short(self, input_stream):
         # Simulating each record feeding to the processor
-        for record in data:
+        for record in input_stream:
             # Logic to consider appropiate records
             if record["Sex"] == "M" and record["Whole_weight"] > 0.4 and record["Length"] < 0.5:
                 list_record = list(record.values())
@@ -85,7 +73,7 @@ class EnrichMale(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
-                # print("process2")
+                # print("pro2")
 
 
 class FilterAbalone(Processor):
@@ -99,13 +87,9 @@ class FilterAbalone(Processor):
                             "Shucked_weight", "Viscera_weight", "Shell_weight", "Class_number_of_rings", "Shell_humidity_weight"])
             file.close()
 
-    def stream_data(self):
-        super().stream_data()
-
-    async def process_shell_humidity(self):
-        data = super().stream_data()
+    def process_shell_humidity(self, input_stream):
         # Simulating each record feeding to the processor
-        for record in data:
+        for record in input_stream:
             shell_humidity_weight = (
                 record["Whole_weight"] - record["Shucked_weight"]) - record["Shell_weight"]
             shell_humidity_weight = round(shell_humidity_weight, 3)
@@ -120,7 +104,7 @@ class FilterAbalone(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
-                # print("process3")
+                # print("processor3")
 
 
 if __name__ == '__main__':
@@ -129,17 +113,26 @@ if __name__ == '__main__':
     # take source input data
     source = "data/input/abalone_full.csv"
 
+    data = CSVInputStream(source)
+
     sink1 = "data/output/infants_with_more_than_14_rings.csv"
-    infant_processor = EnrichInfant(source, sink1)
-    infant_processor.process_infants_with_more_than_14_rings()
+    infant_processor = EnrichInfantAbalone(source, sink1)
 
     sink2 = "data/output/males_heavy_and_short.csv"
-    males_processor = EnrichMale(source, sink2)
-    males_processor.process_males_heavy_and_short()
+    males_processor = EnrichMaleAbalone(source, sink2)
 
     sink3 = "data/output/shell_humidity.csv"
     shell_processor = FilterAbalone(source, sink3)
-    shell_processor.process_shell_humidity()
+
+    # process data with given constraints on all abalone
+    shell_processor.process_shell_humidity(data.get_stream_data())
+
+    # process data with given constraints on infant abalone
+    infant_processor.process_infants_with_more_than_14_rings(
+        data.get_stream_data())
+
+    # process data with given constraints on male abalone
+    males_processor.process_males_heavy_and_short(data.get_stream_data())
 
     end = time.time()
-    print(f"Time taken to run the program synchronously is {end - begin}")
+    print(f"Time taken to run the program asynchronously is {end - begin}")
