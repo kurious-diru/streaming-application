@@ -11,6 +11,7 @@
 
 - The data is pre processed and clean to begin with
 - The whole csv file shouldn't be taken into memory at once.
+- Since there is no lag in appending data, the processors do take advantage of concurrency.
 
 
 ### Assumptions: 
@@ -23,7 +24,5 @@
 ### Future scope:
 
 - Write more tests to cover the application as it grows
-- Include technologies which handle data in scale like Kafka streams and Faust
-- Build a pre-processing pipeline to handle noisy data
-- Can use a load balancing technology like Tremor if logs are too high
-- 
+- Include technologies/frameworks which handle data in scale like Kafka streams and Faust(for python).
+- Build a pre-processing pipeline to handle any noisy data in future.

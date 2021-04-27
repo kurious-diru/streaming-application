@@ -14,10 +14,15 @@ class Processor(ABC):
         self.id = 1
         self.sink = sink
         self.source = source
+        self.headers = list()
+        with open(source, "r") as f:
+            d_reader = csv.DictReader(f)
+            self.headers = d_reader.fieldnames
+            f.close()
+        self.headers.insert(0, "ID")
         with open(sink, 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["ID", "Sex", "Length",	"Diameter", "Height", "Whole_weight",
-                            "Shucked_weight", "Viscera_weight", "Shell_weight", "Class_number_of_rings"])
+            writer.writerow(self.headers)
             file.close()
 
 
@@ -68,7 +73,7 @@ class EnrichMaleAbalone(Processor):
                 list_record = list(record.values())
                 list_record.insert(0, self.id)
                 self.id = self.id + 1
-                # Appeding the appropriate data with an extra ID attribute
+                # Appending the appropriate data with an extra ID attribute
                 with open(self.sink, 'a', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow(list_record)
@@ -83,8 +88,8 @@ class FilterAbalone(Processor):
         with open(sink, 'w', newline='') as file:
             writer = csv.writer(file)
             # Overriding attributes in csv as we introduce new attribute called "Shell_humidity_weight"
-            writer.writerow(["ID", "Sex", "Length",	"Diameter", "Height", "Whole_weight",
-                            "Shucked_weight", "Viscera_weight", "Shell_weight", "Class_number_of_rings", "Shell_humidity_weight"])
+            self.headers.append("Shell_humidity_weight")
+            writer.writerow(self.headers)
             file.close()
 
     def process_shell_humidity(self, input_stream):
@@ -99,7 +104,7 @@ class FilterAbalone(Processor):
                 list_record.insert(0, self.id)
                 list_record.append(shell_humidity_weight)
                 self.id = self.id + 1
-                # Appeding the appropriate data with extra ID and Shell_humidity_weight attributes
+                # Appending the appropriate data with extra ID and Shell_humidity_weight attributes
                 with open(self.sink, 'a', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow(list_record)
