@@ -19,7 +19,6 @@ class CSVInputStream(Producer):
     def __init__(self, source):
         super().__init__(source)
 
-    @asyncio.coroutine
     def get_stream_data(self):
         # Loading data through generators, avoiding memory error
         yield from pd.read_csv(self.source).to_dict("records")

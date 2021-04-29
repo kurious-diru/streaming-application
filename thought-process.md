@@ -7,12 +7,12 @@
 3. Build an application simulating the task at hand
 - I am going with the simplest solution which does the task at hand (3rd)
 
-### Other thoughts:
+### Other thoughts/Design decisions:
 
 - The data is pre processed and clean to begin with
-- The whole csv file shouldn't be taken into memory at once.
-- Since there is no lag in appending data, the processors do take advantage of concurrency.
-
+- The whole csv file shouldn't be taken into memory at once
+- Since there is no lag in appending data, the processors do not take advantage of concurrency
+- The tests are written modularly which can be extended in future
 
 ### Assumptions: 
 
@@ -21,8 +21,11 @@
 - Limiting the calculated value precision to upto 3 decimal digits
 - The given data is clean and can be used directly
 
-### Future scope:
+### Future scope / Potential Improvements:
 
 - Write more tests to cover the application as it grows
-- Include technologies/frameworks which handle data in scale like Kafka streams and Faust(for python).
-- Build a pre-processing pipeline to handle any noisy data in future.
+- Build a pre-processing pipeline to handle (if any) noisy data in future
+- Add error handling
+- Add other type of testing in future if needed(integration and e2edev)
+- Add security to the handle data via encryption.
+- Include technologies/frameworks which handle data in scale like Kafka streams and Faust(for python)

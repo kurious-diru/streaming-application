@@ -35,7 +35,7 @@ class EnrichInfantAbalone(Processor):
         # Overriding ID with appropriate structure representing rings
         self.id = "R_"
 
-    def process_infants_with_more_than_14_rings(self, input_stream):
+    async def process_infants_with_more_than_14_rings(self, input_stream):
         # Simulating each record feeding to the processor
         for record in input_stream:
             # await asyncio.sleep(0.001)
@@ -57,7 +57,6 @@ class EnrichInfantAbalone(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
-                # print("p1")
 
 
 class EnrichMaleAbalone(Processor):
@@ -65,7 +64,7 @@ class EnrichMaleAbalone(Processor):
     def __init__(self, source, sink):
         super().__init__(source, sink)
 
-    def process_males_heavy_and_short(self, input_stream):
+    async def process_males_heavy_and_short(self, input_stream):
         # Simulating each record feeding to the processor
         for record in input_stream:
             # Logic to consider appropiate records
@@ -78,7 +77,6 @@ class EnrichMaleAbalone(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
-                # print("pro2")
 
 
 class FilterAbalone(Processor):
@@ -92,7 +90,7 @@ class FilterAbalone(Processor):
             writer.writerow(self.headers)
             file.close()
 
-    def process_shell_humidity(self, input_stream):
+    async def process_shell_humidity(self, input_stream):
         # Simulating each record feeding to the processor
         for record in input_stream:
             shell_humidity_weight = (
@@ -109,12 +107,10 @@ class FilterAbalone(Processor):
                     writer = csv.writer(file)
                     writer.writerow(list_record)
                     file.close()
-                # print("processor3")
 
 
 if __name__ == '__main__':
 
-    begin = time.time()
     # take source input data
     source = "data/input/abalone_full.csv"
 
@@ -138,6 +134,3 @@ if __name__ == '__main__':
 
     # process data with given constraints on male abalone
     males_processor.process_males_heavy_and_short(data.get_stream_data())
-
-    end = time.time()
-    print(f"Time taken to run the program asynchronously is {end - begin}")

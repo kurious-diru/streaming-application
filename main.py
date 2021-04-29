@@ -6,7 +6,6 @@ from produce import CSVInputStream
 
 async def main():
 
-    begin = time.time()
     # take source input data
     source = "data/input/abalone_full.csv"
     # getting data from generator
@@ -31,12 +30,8 @@ async def main():
         males_processor.process_males_heavy_and_short(data.get_stream_data()))
 
     # awaiting till all 3 tasks are done asynchronously
-    await task3
+    await task3  # takes the most time among all tasks
     await task2
     await task1
-
-    end = time.time()
-    print(f"Time taken to run the program asynchronously is {end - begin}")
-
 
 asyncio.run(main())

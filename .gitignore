@@ -2,3 +2,5 @@
 *venv*
 # Unnecessary cpython files are ignored
 *.cpython*
+# coverage file
+.coverage
