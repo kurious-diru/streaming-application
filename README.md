@@ -21,3 +21,10 @@ Application to stream data
 ### Thought process
 
 - More info regarding my approach and thought process can be found [here](thought-process.md)
+
+
+### [Optional] Run all commands needed at once using Docker
+
+- Install docker 
+- Build the DockerFilel using ```docker build -t stream-app .```
+- Run it using ```docker run -t -i stream-app```

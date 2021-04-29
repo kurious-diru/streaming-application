@@ -51,7 +51,7 @@ def process_data(input_data_location, output_data_location, test_data_location):
 @pytest.fixture(scope='function')
 # fixture which creates a processor as required
 def create_process_instance(test_data_location, process_data):
-    # nested fixture to go for specific type_ and async as it is testing async functions
+    # nested async fixture to go for specific type_ , as it is testing async functions
     async def _call_specific_instance(source, sink, type_):
 
         source = test_data_location + source
@@ -59,15 +59,15 @@ def create_process_instance(test_data_location, process_data):
         data = process_data(file_name=source)
         if type_ == "EnrichInfantAbalone":
             processor = EnrichInfantAbalone(source, sink)
-            task = processor.process_infants_with_more_than_14_rings(data)
+            task = processor.process(data)
             await task
         elif type_ == "EnrichMaleAbalone":
             processor = EnrichMaleAbalone(source, sink)
-            task = processor.process_males_heavy_and_short(data)
+            task = processor.process(data)
             await task
         else:
             processor = FilterAbalone(source, sink)
-            task = processor.process_shell_humidity(data)
+            task = processor.process(data)
             await task
 
         return processor

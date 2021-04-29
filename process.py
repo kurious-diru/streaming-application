@@ -25,6 +25,10 @@ class Processor(ABC):
             writer.writerow(self.headers)
             file.close()
 
+    @abstractmethod
+    async def process(self, input_stream: CSVInputStream):
+        raise NotImplementedError()
+
 
 class EnrichInfantAbalone(Processor):
 
@@ -35,7 +39,7 @@ class EnrichInfantAbalone(Processor):
         # Overriding ID with appropriate structure representing rings
         self.id = "R_"
 
-    async def process_infants_with_more_than_14_rings(self, input_stream):
+    async def process(self, input_stream):
         # Simulating each record feeding to the processor
         for record in input_stream:
             # await asyncio.sleep(0.001)
@@ -64,7 +68,7 @@ class EnrichMaleAbalone(Processor):
     def __init__(self, source, sink):
         super().__init__(source, sink)
 
-    async def process_males_heavy_and_short(self, input_stream):
+    async def process(self, input_stream):
         # Simulating each record feeding to the processor
         for record in input_stream:
             # Logic to consider appropiate records
@@ -90,7 +94,7 @@ class FilterAbalone(Processor):
             writer.writerow(self.headers)
             file.close()
 
-    async def process_shell_humidity(self, input_stream):
+    async def process(self, input_stream):
         # Simulating each record feeding to the processor
         for record in input_stream:
             shell_humidity_weight = (
@@ -126,11 +130,10 @@ if __name__ == '__main__':
     shell_processor = FilterAbalone(source, sink3)
 
     # process data with given constraints on all abalone
-    shell_processor.process_shell_humidity(data.get_stream_data())
+    shell_processor.process(data.get_stream_data())
 
     # process data with given constraints on infant abalone
-    infant_processor.process_infants_with_more_than_14_rings(
-        data.get_stream_data())
+    infant_processor.process(data.get_stream_data())
 
     # process data with given constraints on male abalone
-    males_processor.process_males_heavy_and_short(data.get_stream_data())
+    males_processor.process(data.get_stream_data())

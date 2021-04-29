@@ -3,7 +3,7 @@ import pandas as pd
 import asyncio
 
 
-class Producer(ABC):
+class Consumer(ABC):
     # abstract class which can be implemented based on input stream
     @abstractmethod
     def __init__(self, source):
@@ -14,7 +14,7 @@ class Producer(ABC):
         pass
 
 
-class CSVInputStream(Producer):
+class CSVInputStream(Consumer):
     # Input stream class for csv files
     def __init__(self, source):
         super().__init__(source)
